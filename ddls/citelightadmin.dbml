@@ -1,0 +1,224 @@
+ // Tablas de catálogos principales
+Table CAT_ESTATUS {
+  estatus_key int [pk, increment]
+  descripcion varchar(100) [not null]
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+}
+
+Table CAT_USUARIOS {
+  usuarios_key int [pk, increment]
+  nombre varchar(100) [not null]
+  apellido_paterno varchar(100) [not null]
+  apellido_materno varchar(100)
+  login varchar(150) [not null, unique]
+  email varchar(150) [not null, unique]
+  password varchar(255) [not null]
+  token_password varchar(500)
+  clave_usuario varchar(20)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+  perfil_link int [not null]
+}
+
+Table CAT_PROYECTOS {
+  proyecto_key int [pk, increment]
+  clave_proyecto varchar (20)
+  nombre varchar(200) [not null]
+  descripcion text
+  fecha_inicio date [not null]
+  fecha_fin date
+  latitud double
+  longitud double
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_PERMISOS {
+  permiso_key int [pk, increment]
+  nombre varchar(100) [not null]
+  descripcion varchar(100)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_PERFILES {
+  perfil_key int [pk, increment]
+  nombre varchar(100) [not null]
+  clave_perfil varchar(100)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_BASES {
+  base_key int [pk, increment]
+  codigo_base varchar(50) [not null, unique]
+  descripcion_base varchar(100) [not null]
+  material varchar(50)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_POSTES {
+  poste_key int [pk, increment]
+  descripcion_poste varchar(100) [not null]
+  codigo_poste varchar(50) [not null, unique]
+  material varchar(50)
+  altura decimal(5,2)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_BRAZOS {
+  brazo_key int [pk, increment]
+  codigo_brazo varchar(50) [not null, unique]
+  descripcion_brazo varchar(100)
+  material varchar(50)
+  longitud decimal(5,2)
+  angulo decimal(5,2)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_LUMINARIAS {
+  luminaria_key int [pk, increment]
+  codigo_luminaria varchar(50) [not null, unique]
+  descripcion_luminaria varchar(100)
+  modelo varchar(100)
+  potencia decimal(6,2)
+  flujo_luminoso decimal(8,2)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_LAMPARAS {
+  lampara_key int [pk, increment]
+  codigo_lampara varchar(50) [not null, unique]
+  descripcion_lampara varchar(100)
+  potencia decimal(6,2)
+  vida_util_horas int
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_ALMACENES {
+  almacen_key int [pk, increment]
+  clave_almacen varchar(20)
+  nombre varchar(100) [not null]
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_CUADRILLAS {
+  cuadrilla_key int [pk, increment]
+  clave_cuadrilla varchar(20)
+  nombre varchar(100) [not null]
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CAT_ESTADOS {
+  estado_key int [pk, increment]
+  clave_estado varchar(20)
+  nombre varchar(100) [not null]
+  nombre_abreviado varchar(100) [not null]
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+}
+
+Table CAT_MUNICIPIOS {
+  municipio_key int [pk, increment]
+  estado_link int [not null]
+  nombre varchar(100) [not null]
+  clave_municipio varchar(100)
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+}
+
+Table CAT_LOCALIDADES {
+  localidad_key int [pk, increment]
+  municipio_link int [not null]
+  clave_localidad varchar(100)
+  nombre varchar(100) [not null]
+  cp varchar(6)
+  latitud double
+  longitud double
+  fecha_creacion timestamp [default: `now()`]
+  fecha_modificacion timestamp [default: `now()`]
+}
+
+// Tablas de relación
+Table ALMACEN_PROYECTO {
+  almacen_proyecto_key int [pk, increment]
+  almacen_link int [not null]
+  proyecto_link int [not null]
+  fecha_creacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table CUADRILLA_PROYECTO {
+  cuadrilla_proyecto_key int [pk, increment]
+  proyecto_link int [not null]
+  cuadrilla_link int [not null]
+  fecha_creacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table USUARIO_PROYECTO {
+  usuario_proyecto_key int [pk, increment]
+  usuario_link int [not null]
+  proyecto_link int [not null]
+  fecha_creacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+Table PERFIL_PERMISO {
+  perfil_permiso_key int [pk, increment]
+  permiso_link int [not null]
+  perfil_link int [not null]
+  fecha_creacion timestamp [default: `now()`]
+  estatus_link int [not null]
+}
+
+// Relaciones
+Ref: CAT_USUARIOS.perfil_link > CAT_PERFILES.perfil_key
+Ref: CAT_MUNICIPIOS.estado_link > CAT_ESTADOS.estado_key
+Ref: CAT_LOCALIDADES.municipio_link > CAT_MUNICIPIOS.municipio_key
+
+Ref: ALMACEN_PROYECTO.almacen_link > CAT_ALMACENES.almacen_key
+Ref: ALMACEN_PROYECTO.proyecto_link > CAT_PROYECTOS.proyecto_key
+
+Ref: CUADRILLA_PROYECTO.cuadrilla_link > CAT_CUADRILLAS.cuadrilla_key
+Ref: CUADRILLA_PROYECTO.proyecto_link > CAT_PROYECTOS.proyecto_key
+
+Ref: USUARIO_PROYECTO.usuario_link > CAT_USUARIOS.usuarios_key
+Ref: USUARIO_PROYECTO.proyecto_link > CAT_PROYECTOS.proyecto_key
+
+Ref: PERFIL_PERMISO.perfil_link > CAT_PERFILES.perfil_key
+Ref: PERFIL_PERMISO.permiso_link > CAT_PERMISOS.permiso_key
+
+Ref: CAT_LUMINARIAS.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_LAMPARAS.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_ALMACENES.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_CUADRILLAS.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_PERMISOS.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_PERFILES.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_BASES.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_POSTES.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CAT_BRAZOS.estatus_link > CAT_ESTATUS.estatus_key
+Ref: USUARIO_PROYECTO.estatus_link > CAT_ESTATUS.estatus_key
+Ref: USUARIO_PERFIL.estatus_link > CAT_ESTATUS.estatus_key
+Ref: PERFIL_PERMISO.estatus_link > CAT_ESTATUS.estatus_key
+Ref: ALMACEN_PROYECTO.estatus_link > CAT_ESTATUS.estatus_key
+Ref: CUADRILLA_PROYECTO.estatus_link > CAT_ESTATUS.estatus_key
