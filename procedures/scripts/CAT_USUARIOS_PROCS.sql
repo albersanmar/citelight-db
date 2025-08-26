@@ -168,4 +168,74 @@ BEGIN
 	END
 END^
 
+CREATE OR ALTER PROCEDURE CTLIGHT_GET_SESSION_USUARIO (
+	P_LOGIN VARCHAR(50),
+	P_PASSWORD VARCHAR(500)
+)
+RETURNS (
+	ID INTEGER,
+	FULLNAME VARCHAR(200),
+	LOGIN VARCHAR(50),
+	EMAIL VARCHAR(100),
+	STATUS VARCHAR(20),
+	RESULTADO INTEGER,
+	MSG VARCHAR(100)
+)
+AS
+/*
+ * Usuario: Asanchezm
+ * Fecha: 26/08/2025
+ * Descripción: Obtiene la sesión del usuario
+
+ * Modificaciones:
+ * 26/08/2025, Asanchezm, Validación de usuario y contraseña
+ */
+DECLARE VARIABLE V_PASSWORD VARCHAR(255);
+DECLARE VARIABLE V_ESTATUS_LINK INTEGER;
+BEGIN
+	RESULTADO = 0;
+    MSG = '';
+
+    IF (NOT EXISTS(SELECT USUARIOS_KEY FROM CAT_USUARIOS WHERE LOGIN = :P_LOGIN)) THEN
+    BEGIN
+        MSG = 'El usuario no existe';
+        SUSPEND;
+        EXIT;
+    END
+
+	SELECT PWD, ESTATUS_LINK
+    FROM CAT_USUARIOS
+    WHERE LOGIN = :P_LOGIN
+    INTO :V_PASSWORD, :V_ESTATUS_LINK;
+
+    IF (:V_PASSWORD <> :P_PASSWORD) THEN
+    BEGIN
+        MSG = 'Contraseña incorrecta';
+        SUSPEND;
+        EXIT;
+    END
+
+	IF (:V_ESTATUS_LINK <> 1) THEN
+    BEGIN
+        MSG = 'Usuario inactivo';
+        SUSPEND;
+        EXIT;
+    END
+
+	FOR
+        SELECT 
+            USUARIOS_KEY, 
+            NOMBRE || ' ' || APELLIDO_PATERNO || ' ' || COALESCE(APELLIDO_MATERNO, '') AS FULLNAME,
+            LOGIN,
+            EMAIL,
+            ESTATUS_LINK,
+            1 AS RESULTADO,
+            'Sesión iniciada correctamente' AS MSG
+        FROM CAT_USUARIOS
+        WHERE LOGIN = :P_LOGIN
+        INTO :ID, :FULLNAME, :LOGIN, :EMAIL, :STATUS, :RESULTADO, :MSG
+    DO
+        SUSPEND;
+END^
+
 SET TERM ; ^
