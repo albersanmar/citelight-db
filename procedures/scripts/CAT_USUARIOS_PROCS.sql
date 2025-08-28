@@ -239,3 +239,115 @@ BEGIN
 END^
 
 SET TERM ; ^
+
+SET TERM ^ ;
+
+CREATE OR ALTER PROCEDURE CTLIGHT_SET_FORGOT_PASSWORD (
+    P_EMAIL VARCHAR(150),
+	P_TOKEN VARCHAR(500)
+)
+RETURNS (
+    TOKEN VARCHAR(500),
+    RESULTADO INTEGER,
+    MSG VARCHAR(100)
+)
+AS
+/* 
+ * Usuario: Asanchezm
+ * Fecha: 27/08/2025
+ * Descripción: Genera un token para iniciar el proceso de recuperación de contraseña
+
+ * Modificaciones:
+ * 27/08/2025, Asanchezm, Creación del procedimiento
+ */
+DECLARE VARIABLE V_USUARIOS_KEY INTEGER;
+DECLARE VARIABLE V_TOKEN VARCHAR(500);
+BEGIN
+    RESULTADO = 0;
+    MSG = 'No se pudo generar el token';
+    TOKEN = NULL;
+
+	SELECT USUARIOS_KEY FROM CAT_USUARIOS WHERE EMAIL = :P_EMAIL INTO :V_USUARIOS_KEY;
+
+    IF (V_USUARIOS_KEY IS NULL) THEN
+    BEGIN
+        MSG = 'El correo no existe en la base de datos';
+        SUSPEND;
+        EXIT;
+    END
+
+    V_TOKEN = P_TOKEN;
+
+    UPDATE CAT_USUARIOS
+    SET TOKEN_PASSWORD = :V_TOKEN,
+        FECHA_MODIFICACION = CURRENT_TIMESTAMP
+    WHERE USUARIOS_KEY = :V_USUARIOS_KEY;
+
+    IF (ROW_COUNT > 0) THEN
+    BEGIN
+        RESULTADO = 1;
+        MSG = 'Token generado correctamente';
+        TOKEN = V_TOKEN;
+    END
+
+    SUSPEND;
+END^
+
+SET TERM ; ^
+
+SET TERM ^ ;
+
+CREATE OR ALTER PROCEDURE CTLIGHT_SET_RESET_PASSWORD (
+    P_TOKEN_PASSWORD VARCHAR(500),
+    P_NEW_PASSWORD VARCHAR(255),
+    P_CONFIRM_PASSWORD VARCHAR(255)
+)
+RETURNS (
+    RESULTADO INTEGER,
+    MSG VARCHAR(100)
+)
+AS
+/*
+ * Usuario: Asanchezm
+ * Fecha: 27/08/2025
+ * Descripción: Restablece la contraseña de un usuario utilizando un token de recuperación.
+ *
+ * Modificaciones:
+ * 27/08/2025, Asanchezm, Creación del procedimiento
+ */
+DECLARE VARIABLE V_USUARIOS_KEY INTEGER;
+BEGIN
+    RESULTADO = 0;
+    MSG = 'No existe el token';
+
+	SELECT USUARIOS_KEY FROM CAT_USUARIOS WHERE TOKEN_PASSWORD = :P_TOKEN_PASSWORD INTO :V_USUARIOS_KEY;
+
+    IF (V_USUARIOS_KEY IS NULL) THEN
+    BEGIN
+        SUSPEND;
+        EXIT;
+    END
+
+    IF (:P_NEW_PASSWORD <> :P_CONFIRM_PASSWORD) THEN
+    BEGIN
+        MSG = 'Las contraseñas no coinciden';
+        SUSPEND;
+        EXIT;
+    END
+
+    UPDATE CAT_USUARIOS
+    SET PWD = :P_NEW_PASSWORD,
+        TOKEN_PASSWORD = NULL,
+        FECHA_MODIFICACION = CURRENT_TIMESTAMP
+    WHERE USUARIOS_KEY = :V_USUARIOS_KEY;
+
+    IF (ROW_COUNT > 0) THEN
+    BEGIN
+        RESULTADO = 1;
+        MSG = 'Contraseña actualizada';
+    END
+
+    SUSPEND;
+END^
+
+SET TERM ; ^
